@@ -118,14 +118,14 @@ oUF.Tags.Methods["Tukui:MaxHP"] = function(unit)
 	return HP
 end
 
-oUF.Tags.Events["Tukui:CurrentPower"] = "UNIT_POWER"
+oUF.Tags.Events["Tukui:CurrentPower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
 oUF.Tags.Methods["Tukui:CurrentPower"] = function(unit)
 	local Power = UnitFrames.ShortValue(UnitPower(unit))
 	
 	return Power
 end
 
-oUF.Tags.Events["Tukui:MaxPower"] = "UNIT_POWER"
+oUF.Tags.Events["Tukui:MaxPower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
 oUF.Tags.Methods["Tukui:MaxPower"] = function(unit)
 	local Power = UnitFrames.ShortValue(UnitPowerMax(unit))
 	
