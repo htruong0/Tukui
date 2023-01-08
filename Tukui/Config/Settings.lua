@@ -30,6 +30,7 @@ C["General"] = {
 		["Options"] = {
 			["Express Way"] = "Interface\\AddOns\\Tukui\\Medias\\Fonts\\Expressway.ttf",
 			["PT Sans Narrow"] = "Interface\\AddOns\\Tukui\\Medias\\Fonts\\PtSansNarrow.ttf",
+			["Rubik-Mod"] = "Interface\\AddOns\\Tukui\\Medias\\Fonts\\Rubik-Mod.ttf",
 		},
 
 		["Value"] = "Interface\\AddOns\\Tukui\\Medias\\Fonts\\Expressway.ttf",
@@ -414,6 +415,7 @@ C["UnitFrames"] = {
 			["Percent"] = "|cff549654[perhp]%|r",
 			["HP and Percent"] = "|cff549654[Tukui:CurrentHP] - [perhp]%|r",
 			["HP / Max HP and Percent"] = "|cff549654[Tukui:CurrentHP] / [Tukui:MaxHP] - [perhp]%|r",
+			["HP and MP"] = "|cff549654[Tukui:CurrentHP] ([perhp]%) |cff656565| |cff5881AD[Tukui:CurrentPower] ([perpp]%)|r",
 		},
 
 		["Value"] = "|cff549654[Tukui:CurrentHP]|r",

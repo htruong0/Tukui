@@ -118,6 +118,20 @@ oUF.Tags.Methods["Tukui:MaxHP"] = function(unit)
 	return HP
 end
 
+oUF.Tags.Events["Tukui:CurrentPower"] = "UNIT_POWER"
+oUF.Tags.Methods["Tukui:CurrentPower"] = function(unit)
+	local Power = UnitFrames.ShortValue(UnitPower(unit))
+	
+	return Power
+end
+
+oUF.Tags.Events["Tukui:MaxPower"] = "UNIT_POWER"
+oUF.Tags.Methods["Tukui:MaxPower"] = function(unit)
+	local Power = UnitFrames.ShortValue(UnitPowerMax(unit))
+	
+	return Power
+end
+
 oUF.Tags.Events["Tukui:AFK"] = "PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["Tukui:AFK"] = function(unit)
 	if UnitIsAFK(unit) then

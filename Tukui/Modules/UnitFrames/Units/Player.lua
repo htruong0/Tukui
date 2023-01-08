@@ -266,15 +266,20 @@ function UnitFrames:Player()
 
 		if (C.UnitFrames.UnlinkCastBar) then
 			CastBar:ClearAllPoints()
-			CastBar:SetWidth(200)
-			CastBar:SetHeight(23)
+			CastBar:SetWidth(300 - 25 - 4)
+			CastBar:SetHeight(25)
 			CastBar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 220)
+			CastBar:CreateBackdrop()
 			CastBar:CreateShadow()
+			
+			CastBar.Backdrop:SetOutside()
 
 			if (C.UnitFrames.CastBarIcon) then
 				CastBar.Icon:ClearAllPoints()
-				CastBar.Icon:SetPoint("RIGHT", CastBar, "LEFT", -8, 0)
+				CastBar.Icon:SetPoint("RIGHT", CastBar, "LEFT", -4, 0)
 				CastBar.Icon:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
+
+				CastBar.Button.Backdrop:SetOutside()
 
 				CastBar.Button:ClearAllPoints()
 				CastBar.Button:SetAllPoints(CastBar.Icon)
