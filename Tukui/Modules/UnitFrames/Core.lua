@@ -408,30 +408,7 @@ function UnitFrames:PostCreateAura(button, unit)
 		Cooldown:SetReverse(true)
 		Cooldown:ClearAllPoints()
 		Cooldown:SetInside()
-		
-		if T.Retail and not Cooldown.IsFontEdited then
-			local NumRegions = Cooldown:GetNumRegions()
-
-			for i = 1, NumRegions do
-				local Region = select(i, Cooldown:GetRegions())
-
-				if Region.GetText then
-					local Font = T.GetFont(C["Cooldowns"].Font)
-
-					Font = _G[Font]:GetFont()
-
-					Region:SetFont(Font, 14, "OUTLINE")
-					Region:SetPoint("CENTER", 1, 0)
-					Region:SetTextColor(1, 0, 0)
-				end
-			end
-			
-			Cooldown.IsFontEdited = true
-		end
-		
-		if (T.WotLK) or ((not isCooldownSize) and (T.Retail)) then
-			Cooldown:SetHideCountdownNumbers(true)
-		end
+		Cooldown:SetHideCountdownNumbers(true)
 		
 		button.Remaining = Cooldown:CreateFontString(nil, "OVERLAY", nil, 7)
 		button.Remaining:SetFont(C.Medias.Font, 12, "THINOUTLINE")
@@ -464,12 +441,25 @@ function UnitFrames:PostCreateAura(button, unit)
 end
 
 function UnitFrames:PostUpdateAura(unit, button, index, offset, filter, isDebuff, duration, timeLeft)
+	local data
+	
+	-- Because on oUF Retail args are different, adjust them
 	if T.Retail then
-		-- Need huge update for DragonFlight, so use default for now
-		return
+		local arg1, arg2, arg3, arg4 = unit, button, index, offset
+		
+		button = arg1
+		unit = arg2
+		data = arg3
+		index = arg4
+		
+		button.filter = (data.isHelpful and "HELPFUL") or (data.isHarmful and "HARMFUL")
+		button.icon = button.Icon
+		button.isPlayer = data.isPlayerAura
 	end
 	
-	local Name, _, _, DType, Duration, ExpirationTime, UnitCaster, IsStealable, _, SpellID = UnitAura(unit, index, button.filter)
+	local Name, Texture, Count, DType, Duration, ExpirationTime, UnitCaster, IsStealable,
+		NameplateShowSelf, SpellID, CanApply, IsBossDebuff, CasterIsPlayer, NameplateShowAll,
+		TimeMod, Effect1, Effect2, Effect3 = UnitAura(unit, index, button.filter)
 	
 	if button then
 		if(button.filter == "HARMFUL") then
@@ -920,6 +910,38 @@ function UnitFrames:Style(unit)
 	return self
 end
 
+-- Function below is based on https://github.com/trincasidra/trincaui/blob/main/unitframes/nameplate.lua
+function UnitFrames:NameplateCallBack(event, unit)
+	if not T.Retail then
+		return
+	end
+	
+	if event == "NAME_PLATE_UNIT_ADDED" then
+		self.blizzPlate = self:GetParent().UnitFrame
+		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
+		self.widgetSet = UnitWidgetSet(unit)
+		if self.widgetsOnly then
+			self.Health:SetAlpha(0)
+			self.Backdrop:SetAlpha(0)
+			self.Shadow:SetAlpha(0)
+			self.widgetContainer = self.blizzPlate.WidgetContainer
+			if self.widgetContainer then
+				self.widgetContainer:SetScale(2.0)
+				self.widgetContainer:SetParent(self)
+				self.widgetContainer:ClearAllPoints()
+				self.widgetContainer:SetPoint("BOTTOM", self, "BOTTOM")
+			end
+		end
+	elseif event == "NAME_PLATE_UNIT_REMOVED" then
+		if self.widgetsOnly and self.widgetContainer then
+			self.Health:SetAlpha(1)
+			self.widgetContainer:SetParent(self.blizzPlate)
+			self.widgetContainer:ClearAllPoints()
+			self.widgetContainer:SetPoint("TOP", self.blizzPlate.castBar, "BOTTOM")
+		end
+	end
+end
+
 function UnitFrames:CreateUnits()
 	local Movers = T["Movers"]
 
@@ -1087,7 +1109,7 @@ function UnitFrames:CreateUnits()
 			[3] = C.NamePlates.AggroColor4,
 		}
 
-		oUF:SpawnNamePlates("Tukui", nil, UnitFrames.NameplatesVariables)
+		oUF:SpawnNamePlates("Tukui", UnitFrames.NameplateCallBack, UnitFrames.NameplatesVariables)
 	end
 end
 

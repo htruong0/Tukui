@@ -35,7 +35,7 @@ local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
 
 local RangeSpellID = {
 	["PALADIN"] = 19750,
-	["SHAMAN"] = 25357,
+	["SHAMAN"] = 8004,
 	["DRUID"] = 774,
 	["PRIEST"] = 2050,
 	["WARLOCK"] = 5697,
@@ -119,7 +119,7 @@ local timer = 0
 local function OnRangeUpdate(_, elapsed)
 	timer = timer + elapsed
 
-	if(timer >= .20) then
+	if(timer >= .10) then
 		for _, object in next, _FRAMES do
 			if(object:IsShown()) then
 				Path(object, 'OnUpdate')

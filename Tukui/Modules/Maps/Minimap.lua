@@ -63,9 +63,8 @@ function Minimap:DisableMinimapElements()
 	
 	if T.Retail then
 		-- Expansion panel
-		ExpansionLandingPageMinimapButton:SetParent(T.OffScreen)
-		ExpansionLandingPageMinimapButton:ClearAllPoints()
-		ExpansionLandingPageMinimapButton:SetPoint("CENTER")
+		ExpansionLandingPageMinimapButton:EnableMouse(false)
+		ExpansionLandingPageMinimapButton:SetAlpha(0)
 	end
 end
 
@@ -100,9 +99,9 @@ function Minimap:OnMouseClick(button)
 end
 
 function Minimap:StyleMinimap()
-	local Mail = MinimapCluster and MinimapCluster.MailFrame or MiniMapMailFrame
-	local MailBorder = MiniMapMailBorder
 	local MailIcon = MiniMapMailIcon
+	local Mail = (T.Retail and MiniMapMailIcon:GetParent()) or (MinimapCluster and MinimapCluster.MailFrame) or (MiniMapMailFrame)
+	local MailBorder = MiniMapMailBorder
 
 	self:SetMaskTexture(C.Medias.Blank)
 	self:CreateBackdrop()
@@ -116,6 +115,8 @@ function Minimap:StyleMinimap()
 	if Mail then
 		if T.Retail then
 			Mail:SetParent(Minimap)
+			
+			Minimap.Layout = function() return end
 		end
 		
 		Mail:ClearAllPoints()
@@ -213,9 +214,12 @@ function Minimap:StyleMinimap()
 				if T.BCC then
 					MiniMapTrackingBorder:Kill()
 				end
-
+				
+				MiniMapTracking:SetParent(Minimap)
 				MiniMapTracking:ClearAllPoints()
-				MiniMapTracking:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 2)
+				MiniMapTracking:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, -2)
+
+				MiniMapTrackingButton:StripTextures()
 
 				if (MiniMapTrackingBorder) then
 					MiniMapTrackingBorder:Hide()
@@ -281,7 +285,7 @@ function Minimap:EnableMouseWheelZoom()
 		if (delta > 0) then
 			ZoomIn:Click()
 		elseif (delta < 0) then
-			if T.Retail then
+			if T.Retail or T.WotLK then
 				if Minimap:GetZoom() ~= 0 then
 					ZoomOut:Click()
 				end
@@ -497,7 +501,7 @@ function Minimap:SizeMinimap()
 end
 
 function Minimap:TaxiExitOnEvent(event)
-	if T.Retail and CanExitVehicle() then
+	if (T.Retail or T.WotLK) and CanExitVehicle() then
 		if (UnitOnTaxi("player")) then
 			self.Text:SetText("|cffFF0000" .. TAXI_CANCEL .. "|r")
 		else
@@ -518,7 +522,7 @@ function Minimap:TaxiExitOnClick()
 	if (UnitOnTaxi("player")) then
 		TaxiRequestEarlyLanding()
 	else
-		if T.Retail then
+		if T.Retail or T.WotLK then
 			VehicleExit()
 		end
 	end

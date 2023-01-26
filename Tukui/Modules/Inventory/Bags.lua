@@ -28,7 +28,7 @@ local GetContainerNumFreeSlots = C_Container and C_Container.GetContainerNumFree
 local GetContainerItemInfo = C_Container and C_Container.GetContainerItemInfo or GetContainerItemInfo
 local SetItemSearch = C_Container and C_Container.SetItemSearch or SetItemSearch
 local SetSortBagsRightToLeft = C_Container and C_Container.SetSortBagsRightToLeft or SetSortBagsRightToLeft
-local SetInsertItemsLeftToRight = C_Container and C_Container.SetInsertItemsLeftToRight or SetSortBagsRightToLeft
+local SetInsertItemsLeftToRight = C_Container and C_Container.SetInsertItemsLeftToRight or SetInsertItemsLeftToRight
 local GetContainerItemCooldown = C_Container and C_Container.GetContainerItemCooldown or GetContainerItemCooldown
 
 BACKPACK_HEIGHT = 256
@@ -104,6 +104,7 @@ function Bags:SkinBagButton()
 		return
 	end
 
+	local NormalTexture = _G[self:GetName().."NormalTexture"]
 	local Icon = _G[self:GetName().."IconTexture"]
 	local Quest = _G[self:GetName().."IconQuestTexture"]
 	local Count = _G[self:GetName().."Count"]
@@ -114,6 +115,10 @@ function Bags:SkinBagButton()
 	self:SetFrameLevel(0)
 
 	Border:SetAlpha(0)
+	
+	if NormalTexture then
+		NormalTexture:SetAlpha(0)
+	end
 
 	Icon:SetTexCoord(unpack(T.IconCoord))
 	Icon:SetInside(self)
@@ -155,7 +160,9 @@ function Bags:HideBlizzard()
 	local BankPortraitTexture = _G["BankPortraitTexture"]
 	local BankSlotsFrame = _G["BankSlotsFrame"]
 
-	BankPortraitTexture:Hide()
+	if BankPortraitTexture then
+		BankPortraitTexture:Hide()
+	end
 
 	BankFrame:EnableMouse(false)
 
@@ -567,7 +574,7 @@ function Bags:CreateContainer(storagetype, ...)
 		SortButton.Text:SetJustifyH("LEFT")
 		SortButton.Text:SetPoint("CENTER")
 		SortButton.Text:SetText(BAG_FILTER_CLEANUP)
-		SortButton:SetScript("OnClick", BankFrame_AutoSortButtonOnClick)
+		SortButton:SetScript("OnClick", BankFrame_AutoSortButtonOnClick or SortBankBags)
 
 		local SwitchReagentButton = CreateFrame("Button", nil, Container)
 		SwitchReagentButton:SetSize((Container:GetWidth() / 2) - 1, 23)
@@ -667,7 +674,7 @@ function Bags:SlotUpdate(id, button)
 
 	local _, Rarity, ItemLink, ItemID, IsBound, StackCount
 	
-	if T.Retail and T.TocVersion >= 100002 then
+	if (T.Retail and T.TocVersion >= 100002) or (T.WotLK) then
 		local Table = GetContainerItemInfo(id, button:GetID())
 
 		if Table then
@@ -1197,7 +1204,13 @@ end
 function Bags:OpenAllBankBags()
 	local Bank = BankFrame
 	local CustomPosition = TukuiDatabase.Variables[T.MyRealm][T.MyName].Move.TukuiBank
-
+	
+	local BankStartingBag = 5
+	
+	if T.Retail then
+		BankStartingBag = 6
+	end
+	
 	if Bank:IsShown() then
 		self.Bank:Show()
 
@@ -1216,7 +1229,7 @@ function Bags:OpenAllBankBags()
 			self.Bank.MoverApplied = true
 		end
 
-		for i = 5, T.Classic and 10 or 11 do
+		for i = BankStartingBag, T.Classic and 10 or 11 do
 			if (not IsBagOpen(i)) then
 
 				self:OpenBag(i, 1)
@@ -1405,11 +1418,11 @@ function Bags:Enable()
 
 	if C.Bags.SortToBottom then
 		SetSortBagsRightToLeft(false)
+		SetInsertItemsLeftToRight(true)
 	else
 		SetSortBagsRightToLeft(true)
+		SetInsertItemsLeftToRight(false)
 	end
-
-	SetInsertItemsLeftToRight(false)
 	
 	-- Bug with mouse click
 	GroupLootContainer:EnableMouse(false)
@@ -1526,7 +1539,7 @@ function Bags:Enable()
 		ContainerFrame1.SetHeight = function() return end
 	end
 
-	if not T.Retail then
+	if T.Classic then
 		ToggleAllBags()
 		ToggleAllBags()
 	end
